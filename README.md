@@ -1,9 +1,10 @@
 ### 1、安装java mysql5.7，注意mysql8.0会有问题.
 
 ```javascript
-git clone https://github.com/luo964973791/nacos.git
-cd nacos
-yum install ./*.rpm -y
+wget https://dev.mysql.com/get/mysql57-community-release-el7-11.noarch.rpm
+rpm -Uvh mysql57-community-release-el7-11.noarch.rpm
+yum repolist enabled | grep mysql
+yum install java-1.8.0-openjdk* mysql-community-server -y
 systemctl start mysqld && systemctl enable mysqld
 mysql -uroot -p
 
@@ -54,5 +55,30 @@ db.num=1
 db.url.0=jdbc:mysql://172.27.0.3:3306/nacos?characterEncoding=utf8&connectTimeout=1000&socketTimeout=3000&autoReconnect=true&useUnicode=true&useSSL=false&serverTimezone=CST
 db.user.0=root
 db.password.0='Test!@123'
+```
+
+### 四、设置开机自启动
+
+```javascript
+[root@node1 nacos]# cat /etc/systemd/system/nacos.service 
+[Unit]
+Description=nacos
+After=syslog.target network.target remote-fs.target nss-lookup.target
+
+[Service]
+Type=forking
+ExecStart=/data/nacos/bin/startup.sh
+ExecStop=/data/nacos/bin/shutdown.sh
+ExecReload=/bin/kill -s HUP $MAINPID
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
+```
+
+### 五、启动nacos集群
+
+```javascript
+systemctl start nacos && systemctl enable nacos
 ```
 
