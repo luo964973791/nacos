@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "nacos.fullname" . }}
+  labels:
+    app: {{ template "nacos.name" . }}
+    chart: {{ template "nacos.chart" . }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+    {{- if .Values.labels }}
+{{ toYaml .Values.labels | indent 4 }}
+    {{- end }}
+data:
+  sql_files: "https://raw.githubusercontent.com/alibaba/nacos/{{ .Chart.AppVersion }}/distribution/conf/nacos-mysql.sql"
+{{- if .Values.config.enabled -}}
+{{ toYaml .Values.config.data | indent 2 }}
+{{- end -}}

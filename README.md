@@ -82,3 +82,83 @@ WantedBy=multi-user.target
 systemctl start nacos && systemctl enable nacos
 ```
 
+
+
+
+
+
+
+
+
+### 六、k8s容器启动nacos集群
+
+```javascript
+git clone https://github.com/luo964973791/nacos.git
+
+#创建数据表
+mysql -uroot -p
+create database nacos default character set utf8 collate utf8_general_ci;
+```
+
+### 七、修改模板
+
+```javascript
+cd nacos && vi values.yaml
+
+# 副本个数
+replicaCount: 3
+
+
+service:
+  type: ClusterIP  # 一般不用修改
+  ingressPort: 8848
+  ports:
+    http:
+      port: 8848  # Service port number for client-a port.
+      protocol: TCP  # Service port protocol for client-a port.
+
+
+persistentVolume:   # 是否存储持久化
+  enabled: true     # 启用持久化存储
+  storageClass: "csi-rbd-sc"     # 设置 storageClass,使用kubectl get storageclass -A查看.
+  accessMode: ReadWriteOnce
+  annotations: {}
+    # helm.sh/resource-policy: keep
+  size: 10Gi  # 大小为 10G
+
+
+ingress:  # 是否使用nginx暴露域名或端口
+  enabled: true     # 启用 ingress
+  annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+  ingressClassName: ""
+  path: /nacos
+  pathType: ImplementationSpecific
+  hosts:
+    - nacos.evescn.com    # 设置域名
+  tls: [] # 未启动 https认证
+
+
+mysql:
+  # false表示启用外部存储
+  enabled: false
+  # 可以自建 nacos 用户，这里此处直接使用了 root 账户进行 mysql 集群登陆
+  # 需要去数据库新建 nacos 数据库
+  external:
+    mysqlMasterHost: "mysql-cluster-mysql.test-middleware"
+    mysqlDatabase: "nacos"
+    mysqlMasterPort: "3306"
+    mysqlMasterUser: "root"
+    mysqlMasterPassword: "root123"
+    mysqlSlaveHost: "mysql-cluster-mysql-slave.test-middleware"
+    mysqlSlavePort: "3306"
+```
+
+### 八、启动.
+
+```javascript
+kubectl create ns nacos
+helm install nacos -n nacos -f ./values.yaml .
+```
+
