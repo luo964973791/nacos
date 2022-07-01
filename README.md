@@ -124,11 +124,11 @@ persistentVolume:   # 是否存储持久化
   accessMode: ReadWriteOnce
   annotations: {}
     # helm.sh/resource-policy: keep
-  size: 10Gi  # 大小为 10G
+  size: 1Gi  # 大小为 10G
 
 
 ingress:  # 是否使用nginx暴露域名或端口
-  enabled: true     # 启用 ingress
+  enabled: false     # 启用 ingress
   annotations: {}
     # kubernetes.io/ingress.class: nginx
     # kubernetes.io/tls-acme: "true"
@@ -146,12 +146,12 @@ mysql:
   # 可以自建 nacos 用户，这里此处直接使用了 root 账户进行 mysql 集群登陆
   # 需要去数据库新建 nacos 数据库
   external:
-    mysqlMasterHost: "mysql-cluster-mysql.test-middleware"
+    mysqlMasterHost: "172.27.0.3"
     mysqlDatabase: "nacos"
     mysqlMasterPort: "3306"
     mysqlMasterUser: "root"
     mysqlMasterPassword: "root123"
-    mysqlSlaveHost: "mysql-cluster-mysql-slave.test-middleware"
+    mysqlSlaveHost: "172.27.0.3"
     mysqlSlavePort: "3306"
 ```
 
