@@ -97,8 +97,7 @@ git clone https://github.com/luo964973791/nacos.git
 
 #创建数据表
 mysql -uroot -p
-
-CREATE DATABASE `nacos` CHARACTER SET utf8 COLLATE utf8_general_ci;
+create database nacos default character set utf8 collate utf8_general_ci;
 
 ```
 
